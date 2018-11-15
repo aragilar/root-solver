@@ -10,7 +10,7 @@ def get_closest_root(target, roots):
     Find the closest root to a specific value. Supports complex numbers.
     """
     diff = target - roots
-    norm = diff * diff.conj
+    norm = diff * diff.conj()
     return roots[argmin(norm)]
 
 
