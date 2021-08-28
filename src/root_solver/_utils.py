@@ -1,7 +1,7 @@
 """
 Utility functions
 """
-from numpy import around as np_round, log2, frombuffer, uint8
+from numpy import around as np_round, log2, frombuffer, uint8, copysign
 
 
 def float_to_bytes(a):
@@ -55,3 +55,6 @@ def get_nearest_radix(x):
     Get nearest power of 2 to number
     """
     return pow(2, np_round(log2(x)))
+
+def sign(x):
+    return copysign(1, x)

@@ -3,10 +3,10 @@ Contains all the logic for solving quadratics
 """
 
 from numpy import (
-    array, sqrt, sign, abs as np_abs, power as np_pow, around as np_round,
+    array, sqrt, abs as np_abs, power as np_pow, around as np_round,
 )
 
-from ._utils import get_nearest_radix
+from ._utils import get_nearest_radix, sign
 
 
 def _disc(a, b, c):
@@ -38,6 +38,8 @@ def solve_quadratic(A, B, C):
 
     Python implementation of QDRTC
     """
+    if C == 0:
+        return array([0, - B / A])
     if A != 0 and C != 0:
         σ = get_nearest_radix(sqrt(np_abs(A)) * sqrt(np_abs(C)))
         if np_abs(B) == np_abs(B) + σ:

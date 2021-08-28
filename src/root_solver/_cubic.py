@@ -4,15 +4,16 @@ quadratics)
 """
 
 from numpy import (
-    array, sqrt, cbrt, sign, abs as np_abs, float64, power as np_pow, finfo,
+    array, sqrt, cbrt, abs as np_abs, float64, power as np_pow, finfo,
     concatenate, inf, around as np_round, isclose, isreal,
 )
 
 from ._quadratic import solve_quadratic
 from ._tracking import RootTracker
-from ._utils import get_shared_figs, check_pairwise
+from ._utils import get_shared_figs, check_pairwise, sign
 
-AFTER_1 = 1 + finfo(float64).eps
+EPS = finfo(float64).eps
+AFTER_1 = 1 + EPS
 CUBIC_CONSTANT = 1.324718
 
 
@@ -180,7 +181,7 @@ def solve_cubic(
     after_1=AFTER_1
 ):
     """
-    Solves the quadratic A x^3 + B x^2 + C x + D.
+    Solves the subic A x^3 + B x^2 + C x + D.
 
     Python implementation of QBC
     """
@@ -205,14 +206,16 @@ def solve_cubic(
             num_calls_double=num_calls_double,
         )
         if is_near_triple:
-            return ret_vals
+            case, roots = ret_vals
+            return case + " near triple", roots
 
         is_near_double, ret_vals = check_quotients_near_double(
             A, B, C, D, num_calls_triple=num_calls_triple,
             num_calls_double=num_calls_double,
         )
         if is_near_double:
-            return ret_vals
+            case, roots = ret_vals
+            return case + " near double", roots
 
     X = - (B / A) / 3
     q, q_dash, b1, c2 = _eval(X, A, B, C, D)
@@ -238,6 +241,25 @@ def solve_cubic(
         b1 = (c2 - C) / X
 
     return "iter", _fin(X, A, b1, c2)
+
+
+def compute_cubic_with_error_estimate(Z, A, B, C, D, δ=EPS, ε=EPS):
+    """
+    Computes the cubic Q = A z^3 + B z^2 + C z + D, and computes an error
+    estimate.
+
+    Python implementation of REVAL.
+
+    Note we assume that np.finfo(float64).eps == δ, ε, which may not be the case
+    """
+    e = np_abs(A) * ε / (ε + δ)
+    q_1 = A * Z + B
+    e = np_abs(Z) * e + np_abs(q_1)
+    q_2 = q_1 * Z + C
+    e = np_abs(Z) * e + np_abs(q_2)
+    Q = q_2 * Z + D
+    Δ = (ε + δ) * np_abs(Z) * e + np_abs(Q) * δ
+    return Q, Δ
 
 
 class CubicTracker(RootTracker):

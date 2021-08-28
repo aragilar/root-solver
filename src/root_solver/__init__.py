@@ -8,7 +8,9 @@ Additionally root-solver includes support for tracking a single root as the
 coefficients of the polynomial changes.
 """
 
-from ._cubic import solve_cubic, CubicTracker
+from ._cubic import (
+    solve_cubic, CubicTracker, compute_cubic_with_error_estimate,
+)
 from ._quadratic import solve_quadratic
 
 from ._version import get_versions
