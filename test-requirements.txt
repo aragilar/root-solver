@@ -1,3 +1,3 @@
 pytest
 pytest-cov
-hypothesis
+hypothesis==6.31.3
